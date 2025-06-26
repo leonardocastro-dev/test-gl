@@ -8,9 +8,11 @@ const Media: CollectionConfig = {
   },
   access: {
     read: () => true,
+    update: () => true
   },
   admin: {
     useAsTitle: 'filename',
+    description: 'Gerencie seus arquivos de mídia',
   },
   fields: [],
 };
