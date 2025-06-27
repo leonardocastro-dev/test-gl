@@ -12,15 +12,16 @@ async function runAllSeeds() {
     await seedPosts()
     console.log('=' .repeat(50))
     
-    // 2. Executar seed de permissões
-    console.log('2️⃣ Executando seed de permissões...')
-    await seedPermissionsCollections()
-    console.log('=' .repeat(50))
-    
-    // 3. Executar seed de roles
     console.log('3️⃣ Executando seed de roles...')
     await seedRoles()
     console.log('=' .repeat(50))
+    
+    console.log('2️⃣ Executando seed de permissões...')
+    await seedPermissionsCollections()
+    console.log('=' .repeat(50))
+    // 2. Executar seed de permissões
+    
+    // 3. Executar seed de roles
     
     console.log('🎉 Todos os seeds foram executados com sucesso!')
     console.log('✅ Posts criados')

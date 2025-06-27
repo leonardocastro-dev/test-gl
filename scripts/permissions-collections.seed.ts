@@ -1,45 +1,41 @@
-import { getPayload } from 'payload'
-import config from '../payload.config'
+import { getPayload } from "payload";
+import config from "../payload.config";
 
 export async function seedPermissionsCollections() {
   try {
-    console.log('🛡️ Iniciando seed de permissões para coleções...')
-    
-    const payload = await getPayload({ config })
-    const collections = payload.config.collections;
+    const noCollections = [
+      "payload-migrations",
+      "payload-preferences",
+      "payload-locked-documents",
+    ];
+
+    const payload = await getPayload({ config });
+
+    const collections = payload.config.collections.filter(
+      (collection) => !noCollections.includes(collection.slug)
+    );
+
+    const actions = ["create", "read", "update", "delete"];
 
     for (const collection of collections) {
-      const collectionSlug = collection.slug;
-
-      console.log(`🔧 Criando permissões para: ${collectionSlug}`);
-
-      await payload.create({
-        collection: "permissions",
-        data: {
-          collection: collectionSlug,
-          canCreate: true,
-          canRead: true,
-          canUpdate: true,
-          canDelete: true,
-          role: "admin",
-        },
-      });
+      for (const action of actions) {
+        await payload.create({
+          collection: "permissions",
+          data: {
+            permission: `${collection.slug}:${action}`,
+            role: "admin",
+          },
+        });
+      }
     }
-
-    console.log("✅ Permissões criadas com sucesso");
-    console.log('🎉 Seed de permissões concluído com sucesso!')
-    
   } catch (error) {
-    console.error('❌ Erro durante o seed de permissões:', error)
-    console.error('Stack trace:', (error as Error).stack)
-    throw error
+    console.error(error);
+    throw error;
   }
 }
 
-// Execução direta quando chamado como script
 if (require.main === module) {
-  console.log('Executando seed de permissões para coleções...')
   seedPermissionsCollections()
     .then(() => process.exit(0))
-    .catch(() => process.exit(1))
+    .catch(() => process.exit(1));
 }
