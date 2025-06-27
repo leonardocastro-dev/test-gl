@@ -1,5 +1,5 @@
-import GridBlock from '@/components/grid-block'
-import GridContainer from '@/components/grid-container'
+import LatestNews from '@/components/latest-news'
+import OldNews from '@/components/old-news'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
@@ -12,12 +12,6 @@ function formatDate(dateString: string) {
   })
 }
 
-function getAutomaticSize(index: number): 'large' | 'medium' | 'small' {
-  if (index === 0) return 'large'
-  if (index >= 1 && index <= 4) return 'medium'
-  return 'small'
-}
-
 async function getPostBlocks() {
   try {
     const payload = await getPayload({ config })
@@ -25,7 +19,7 @@ async function getPostBlocks() {
     const result = await payload.find({
       collection: 'post-blocks',
       sort: '-createdAt',
-      limit: 11,
+      limit: 20,
     })
     console.log(result)
     return result.docs || []
@@ -36,40 +30,26 @@ async function getPostBlocks() {
 }
 
 export default async function Home() {
-  const postBlocks = await getPostBlocks()
+  const PostBlocks = await getPostBlocks()
+  
+  // Formatar as datas antes de dividir os posts
+  const formattedPostBlocks = PostBlocks.map((block: any) => ({
+    ...block,
+    createdAt: block.createdAt ? formatDate(block.createdAt) : undefined
+  }))
+  
+  const latestPosts = formattedPostBlocks.slice(0, 11)
+  const oldPosts = formattedPostBlocks.slice(11, 20)
 
   return (
     <div className="min-h-screen p-8 bg-[#f5f5f7]">
       <div className="max-w-[980px] mx-auto">
         <h1 className="text-3xl font-bold mb-8 text-center">Dashboard de Conteúdo</h1>
-
-        {postBlocks.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600 mb-4">Nenhum bloco de conteúdo encontrado.</p>
-            <p className="text-sm text-gray-500">
-              Acesse o painel admin para criar alguns post-blocks.
-            </p>
-          </div>
-        ) : (
-          <GridContainer>
-            {postBlocks.map((block: any, index: number) => (
-              <GridBlock
-                key={block.id}
-                size={getAutomaticSize(index)}
-                title={block.title}
-                description={block.description}
-                type={block.type}
-                image={block.image ? {
-                  url: block.image.url,
-                  alt: block.image.alt || block.title,
-                  width: block.image.width,
-                  height: block.image.height
-                } : undefined}
-                createdAt={block.createdAt ? formatDate(block.createdAt) : undefined}
-              />
-            ))}
-          </GridContainer>
-        )}
+        <LatestNews postBlocks={latestPosts as any} />
+        <hr className="my-8" />
+        <h2 className="text-2xl font-bold mb-8 text-center">Conteúdo Anterior</h2>
+        <OldNews postBlocks={oldPosts as any} />
+        <br />
       </div>
     </div>
   )
