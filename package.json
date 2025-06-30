@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:dev": "tsx scripts/seed-posts.ts"
+    "seed": "tsx scripts/seed.ts",
+    "seed:dev": "tsx scripts/seed-posts.ts",
+    "seed:roles": "tsx scripts/roles.seed.ts",
+    "seed:permissions": "tsx scripts/permissions-collections.seed.ts"
   },
   "dependencies": {
     "@payloadcms/db-sqlite": "^3.43.0",
